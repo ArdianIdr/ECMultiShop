@@ -1,0 +1,345 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MultiShop - Online Shop Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Content/Assets/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/Content/Assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Content/Assets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-1 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center h-100">
+                    <a class="text-body mr-3" href="@Url.Action("About","Home")">About</a>
+                    <a class="text-body mr-3" href="@Url.Action("Contact","Home")">Contact</a>
+                    <a class="text-body mr-3" href="">Help</a>
+                    <a class="text-body mr-3" href="">FAQs</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @User.Identity.Name 
+                            }
+                            else
+                            {
+                                <text>My Account</text>
+                            }
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form action="@Url.Action("Logoff", "Account")" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">Logoff</button>
+                                </form>
+                                <a class="dropdown-item" href="@Url.Action("OrderHistory", "Home")">Your Order History</a>
+
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign in</a>
+                                <a class="dropdown-item" href="@Url.Action("Register", "Account")">Sign up</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="@Url.Action("Index","Home")" class="text-decoration-none">
+                    <span class="h1 text-uppercase text-primary bg-dark px-2">Multi</span>
+                    <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <br />
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="@Url.Action("Index","Home")">Home</a>
+                    <span class="breadcrumb-item active">Your Order History</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb End -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+    }
+    <!-- Your Order History Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-12">
+                <div class="table-responsive bg-light p-3 rounded">
+                    <table class="table table-bordered text-center mb-0">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total Items</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td><b>@order.OrderId</b></td>
+                                    <td><b>@order.OrderDate.ToString("yyyy-MM-dd 'at' HH:mm:ss")</b></td>
+
+                                    <td><b>@order.Items.Count</b></td>
+                                    <td><b>@order.Total.ToString("C")</b></td>
+                                    <td>
+                                        @if (order.Status == ECMultiShop.Models.OrderStatus.Completed)
+                                        {
+                                            <span class="badge badge-success">Completed</span>
+                                        }
+                                        else if (order.Status == ECMultiShop.Models.OrderStatus.Refunded)
+                                        {
+                                            <span class="badge badge-warning">Refunded</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Other</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <!-- nese porosia nuk ka kaluar 5 dite ather mundso refund perndryshe not eligable, ( totaldays property ) -->
+                                        @if (order.Status == ECMultiShop.Models.OrderStatus.Completed && (DateTime.Now - order.OrderDate).TotalDays <= 5)
+                                        {
+                                            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#refundModal-@order.OrderId">
+                                                Refund
+                                            </button>
+                                        }
+                                        else if (order.Status == ECMultiShop.Models.OrderStatus.Completed)
+                                        {
+                                            <span class="text-muted">Refund not eligible</span>
+                                        }
+
+                                        <button class="btn btn-sm btn-info" type="button" data-toggle="collapse" data-target="#orderItems-@order.OrderId">
+                                            View Items
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Collapsible row for order items -->
+                                <tr class="collapse bg-light" id="orderItems-@order.OrderId">
+                                    <td colspan="6">
+                                        <table class="table table-sm table-bordered mb-0">
+                                            <thead class="table-secondary">
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Size</th>
+                                                    <th>Color</th>
+                                                    <th>Quantity</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Total Price</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in order.Items)
+                                                {
+                                                    <tr>
+                                                        <td>@item.ProductName</td>
+                                                        <td>@item.Size</td>
+                                                        <td>@item.Color</td>
+                                                        <td>@item.Quantity</td>
+                                                        <td>@item.UnitPrice.ToString("C")</td>
+                                                        <td>@item.TotalPrice.ToString("C")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+
+
+                                <!-- Refund Modal -->
+                                <div class="modal fade" id="refundModal-@order.OrderId" tabindex="-1" role="dialog" aria-labelledby="refundModalLabel-@order.OrderId" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <form action="@Url.Action("Refund", "Home")" method="post">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="refundModalLabel-@order.OrderId">Refund Order</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="OrderId" value="@order.OrderId" />
+                                                    <div class="form-group">
+                                                        <label for="refundReason">Reason for Refund</label>
+                                                        <textarea class="form-control" id="refundReason" name="Reason" rows="3" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-danger">Submit Refund</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Your Order History End -->
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
+                <p class="mb-4">We would love to hear from you! Feel free to reach out for any inquiries or support. Our team is here to assist you with any questions or concerns you may have. We value your feedback and aim to provide the best service possible.</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Kumanovo, North Macedonia</p>
+                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@multishop.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+389 70 561262</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-secondary mb-2" href="@Url.Action("Index","Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-secondary mb-2" href="@Url.Action("Shop","Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                            <a class="text-secondary" href="@Url.Action("Contact","Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="col-md-4 mb-5">
+                            <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+                            <div class="d-flex flex-column justify-content-start">
+                                <a class="text-secondary mb-2" href="@Url.Action("Index", "Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("Shop", "Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("OrderHistory", "Home")"><i class="fa fa-angle-right mr-2"></i>Your Order History</a>
+                                <a class="text-secondary" href="@Url.Action("Contact", "Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4 mb-5">
+
+                        </div>
+                    }
+                    <div class="col-md-4 mb-5">
+                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                        <div class="d-flex">
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-secondary">
+                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
+                    by
+                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
+                    <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="~/Content/Assets/img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/Assets/lib/easing/easing.min.js"></script>
+    <script src="~/Content/Assets/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="~/Content/Assets/mail/jqBootstrapValidation.min.js"></script>
+    <script src="~/Content/Assets/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/Content/Assets/js/main.js"></script>
+
+    <script>
+        // Prevent the dropdown-toggle class from stopping the click navigation on the category
+        document.querySelectorAll('.nav-link.dropdown-toggle').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                if (this.getAttribute('href') !== '#') {
+                    window.location.href = this.getAttribute('href');
+                }
+            });
+        });
+        function showImageModal(imageUrl, productName) {
+            // Set the image in the modal
+            document.getElementById('modalImage').src = imageUrl;
+            // Set the product name as modal title
+            document.getElementById('imageModalLabel').textContent = productName;
+            // Show the modal
+            $('#imageModal').modal('show');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,599 @@
+@model ECMultiShop.Models.CategoryViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MultiShop - Online Shop Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="~/Content/Assets/img/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Content/Assets/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/Content/Assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Content/Assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-1 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center h-100">
+                    <a class="text-body mr-3" href="@Url.Action("About","Home")">About</a>
+                    <a class="text-body mr-3" href="@Url.Action("Contact","Home")">Contact</a>
+                    <a class="text-body mr-3" href="">Help</a>
+                    <a class="text-body mr-3" href="">FAQs</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @User.Identity.Name 
+                            }
+                            else
+                            {
+                                <text>My Account</text>
+                            }
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form action="@Url.Action("Logoff", "Account")" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">Logoff</button>
+                                </form>
+                                <a class="dropdown-item" href="@Url.Action("OrderHistory", "Home")">Your Order History</a>
+
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign in</a>
+                                <a class="dropdown-item" href="@Url.Action("Register", "Account")">Sign up</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="@Url.Action("Index","Home")" class="text-decoration-none">
+                    <span class="h1 text-uppercase text-primary bg-dark px-2">Multi</span>
+                    <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
+                </a>
+            </div>
+            <div class="col-lg-4 col-6 text-left">
+                <form action="/Home/Shop" method="GET">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="searchQuery" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0">Customer Service</p>
+                <h5 class="m-0">+012 345 6789</h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid bg-dark mb-30">
+        <div class="row px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
+                    <div class="navbar-nav w-100">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <div class="nav-item dropdown dropright">
+                                <a href="@Url.Action("Shop", new { categoryId = category.Id })" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    @category.Name
+                                    <i class="fa fa-angle-right float-right mt-1"></i>
+                                </a>
+                                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                                    @foreach (var subCategory in category.SubCategories)
+                                    {
+                                        <a href="@Url.Action("Shop", new { subCategoryId = subCategory.Id })" class="dropdown-item">@subCategory.Name</a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <span class="h1 text-uppercase text-dark bg-light px-2">Multi</span>
+                        <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Shop</span>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="@Url.Action("Index","Home")" class="nav-item nav-link">Home</a>
+                            <a href="@Url.Action("Shop","Home")" class="nav-item nav-link">Shop</a>
+                            <a href="@Url.Action("About","Home")" class="nav-item nav-link">About</a>
+                            @* <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
+                                    <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                                        <a href="cart.html" class="dropdown-item">Shopping Cart</a>
+                                        <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                    </div>
+                                </div>*@
+                            <a href="@Url.Action("Contact","Home")" class="nav-item nav-link">Contact</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                            <a href="@Url.Action("Wishlist","Home")" class="btn px-0">
+                                <i class="fas fa-heart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;"> @ViewBag.WishlistCount</span>
+                            </a>
+                            <a href="@Url.Action("Cart","Home")" class="btn px-0 ml-3">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">@ViewBag.TotalProducts</span>
+                            </a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a href="/Home/OrderHistory" class="btn px-0 ml-3" style="display: inline-block; visibility: visible; opacity: 1; color: yellow;">
+                                    <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+                                    <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">
+                                        @ViewBag.TotalOrders
+                                    </span>
+                                </a>
+                              
+
+                            }
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="@Url.Action("Index","Home")">Home</a>
+                    <span class="breadcrumb-item active">Shopping Cart</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    <!-- Cart Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-8 table-responsive mb-5">
+                <table class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Product Image</th>
+                            <th>Product Name</th>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        @if (Model.CartItems != null && Model.CartItems.Any())
+                        {
+                            foreach (var item in Model.CartItems)
+                            {
+                                <tr data-product-id="@item.ProductId" data-size="@item.Size" data-variant-description="@item.VariantDescription">
+                                    <!-- Product Image -->
+                                    <td class="align-middle">
+                                        <a href="javascript:void(0);" onclick="showImageModal('@Url.Content(item.Product.Photos.FirstOrDefault()?.ProductImage ?? "~/Content/ProductImages/DEFAULT.png")', '@item.Product.Name')">
+                                            <img src="@Url.Content(item.Product.Photos.Any() ? item.Product.Photos.FirstOrDefault()?.ProductImage : "~/Content/ProductImages/DEFAULT.png")"
+                                                 alt="@item.Product.Name" class="img-thumbnail" style="width: 90px; height: 90px; object-fit: cover;" />
+                                        </a>
+                                    </td>
+
+                                    <!-- Product Name -->
+                                    <td class="align-middle"><b>@item.Product.Name</b></td>
+
+                                    <!-- Size -->
+                                    <td class="align-middle"><b>@item.Size</b></td>
+
+                                    <!-- Color -->
+                                    <td class="align-middle"><b>@item.VariantDescription</b></td>
+
+                                    <!-- Unit Price -->
+                                    <td class="align-middle unit-price">@item.UnitPrice.ToString("C")</td>
+
+
+
+                                    <!-- Quantity -->
+
+                                    <td class="align-middle">
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary btn-minus" onclick="updateQuantity(this, -1)">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="@item.Quantity" onchange="updateCartSummary()">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary btn-plus" onclick="updateQuantity(this, 1)">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    @*   else
+                                        {
+                                            <td class="align-middle">
+                                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-sm btn-primary btn-minus" disabled title="Please log in to update quantity">
+                                                            <i class="fa fa-minus"></i>
+                                                        </button>
+                                                    </div>
+                                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="@item.Quantity" readonly>
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-sm btn-primary btn-plus" disabled title="Please log in to update quantity and proceed order">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }*@
+
+
+
+                                    <!-- Total -->
+                                    <td class="align-middle total-price" id="total-@item.Id">@((item.UnitPrice * item.Quantity).ToString("C"))</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-danger remove-item"
+                                                data-cart-item-id="@item.Id"
+                                                data-product-id="@item.ProductId"
+                                                data-size="@item.Size"
+                                                data-variant-description="@item.VariantDescription">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </td>
+
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8">Your cart is empty.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-lg-4">
+                <form class="mb-30" action="">
+                    <div class="input-group">
+                        <input type="text" id="coupontxt" class="form-control border-0 p-4" placeholder="Coupon Code">
+                        <input type="hidden" id="discount-percentage" value="@Session["DiscountPercentage"]">
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" onclick="applyCoupon()">Apply Coupon</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" disabled onclick="applyCoupon()">Apply Coupon</button>
+                            </div>
+                        }
+
+                    </div>
+                </form>
+
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom pb-2">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>Subtotal</h6>
+                            <h6 id="cart-subtotal">$0.00</h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Shipping</h6>
+                            <h6 class="font-weight-medium">$5.00</h6>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Discount</h6>
+                            <h6 id="cart-discount">-$0.00</h6> 
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5>Total</h5>
+                            <h5 id="cart-total">$5.00</h5>
+                        </div>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a href="@Url.Action("Checkout", "Home")" class="btn btn-block btn-primary font-weight-bold my-3 py-3
+                @(Model.CartItems == null || !Model.CartItems.Any() ? "disabled" : "")">
+                                Proceed To Checkout
+                            </a>
+                        }
+
+                        else
+                        {
+                            <div class="alert alert-warning my-3">
+                                Please <a href="@Url.Action("Login", "Account")">sign in</a> to proceed to checkout.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Cart End -->
+    <!-- Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Product Name</h5> <!-- Dynamic Product Name Here -->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Product Image" class="img-fluid" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Image Modal End -->
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
+                <p class="mb-4">We would love to hear from you! Feel free to reach out for any inquiries or support. Our team is here to assist you with any questions or concerns you may have. We value your feedback and aim to provide the best service possible.</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Kumanovo, North Macedonia</p>
+                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@multishop.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+389 70 561262</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-secondary mb-2" href="@Url.Action("Index","Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-secondary mb-2" href="@Url.Action("Shop","Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                            <a class="text-secondary" href="@Url.Action("Contact","Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="col-md-4 mb-5">
+                            <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+                            <div class="d-flex flex-column justify-content-start">
+                                <a class="text-secondary mb-2" href="@Url.Action("Index", "Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("Shop", "Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("OrderHistory", "Home")"><i class="fa fa-angle-right mr-2"></i>Your Order History</a>
+                                <a class="text-secondary" href="@Url.Action("Contact", "Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4 mb-5">
+
+                        </div>
+                    }
+                    <div class="col-md-4 mb-5">
+                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                        <div class="d-flex">
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-secondary">
+                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
+                    by
+                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
+                    <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="~/Content/Assets/img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <div>
+        @RenderBody()
+    </div>
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/Assets/lib/easing/easing.min.js"></script>
+    <script src="~/Content/Assets/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="~/Content/Assets/mail/jqBootstrapValidation.min.js"></script>
+    <script src="~/Content/Assets/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/Content/Assets/js/main.js"></script>
+    <script>
+        // Prevent the dropdown-toggle class from stopping the click navigation on the category
+        document.querySelectorAll('.nav-link.dropdown-toggle').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                if (this.getAttribute('href') !== '#') {
+                    window.location.href = this.getAttribute('href');
+                }
+            });
+        });
+
+
+        function showImageModal(imageUrl, productName) {
+            // Set the image in the modal
+            document.getElementById('modalImage').src = imageUrl;
+            // Set the product name as modal title
+            document.getElementById('imageModalLabel').textContent = productName;
+            // Show the modal
+            $('#imageModal').modal('show');
+        }
+        function applyCoupon() {
+            const couponCode = document.querySelector('input[placeholder="Coupon Code"]').value;
+
+            $.post("/Coupons/ValidateCoupon", { couponCode: couponCode }, function (response) {
+                if (response.success) {
+                    const discountPercentage = response.discountPercentage;
+
+                    document.getElementById("discount-percentage").value = discountPercentage;
+                    updateCartSummary(discountPercentage);
+
+                    // Store the discount percentage in session
+                    $.post("/Home/StoreDiscount", { discountPercentage: discountPercentage });
+
+
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function updateQuantity(button, increment) {
+            const input = button.closest('.input-group').querySelector('input');
+            let quantity = parseInt(input.value) + increment;
+            if (quantity < 1) quantity = 1;
+
+            const row = button.closest('tr');
+            const productId = row.getAttribute('data-product-id');
+            const size = row.getAttribute('data-size');
+            const variantDescription = row.getAttribute('data-variant-description');
+
+            // AJAX call to update cart item quantity
+            $.post("/CartItems/UpdateCartItemQuantity", {
+                productId: productId,
+                size: size,
+                variantDescription: variantDescription,
+                quantity: quantity
+            }, function (response) {
+                if (response.success) {
+                    input.value = quantity;
+                    const unitPrice = parseFloat(row.querySelector('td.unit-price').textContent.replace(/[$,]/g, ''));
+                    row.querySelector('td.total-price').textContent = (unitPrice * quantity).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+                    // Use stored discount percentage from the hidden field
+                    const discountPercentage = parseFloat(document.getElementById("discount-percentage").value) || 0;
+                    updateCartSummary(discountPercentage);
+                } else {
+                    alert(response.message);
+                    if (response.maxAvailableQuantity) {
+                        input.value = response.maxAvailableQuantity;
+                    }
+
+                }
+            });
+        }
+
+        function updateCartSummary(discountPercentage = 0) {
+            let subtotal = 0;
+            document.querySelectorAll("td.total-price").forEach(td => {
+                let itemTotal = parseFloat(td.textContent.replace(/[$,]/g, ""));
+                if (!isNaN(itemTotal)) {
+                    subtotal += itemTotal;
+                }
+            });
+
+            document.getElementById("cart-subtotal").textContent = subtotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+            const discountAmount = subtotal * (discountPercentage / 100);
+            document.getElementById("cart-discount").textContent = `-` + discountAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+            const shipping = 5;
+            const total = subtotal + shipping - discountAmount;
+            document.getElementById("cart-total").textContent = total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        }
+
+        // Initial call to update the cart summary when the page loads
+        const initialDiscountPercentage = parseFloat(document.getElementById("discount-percentage").value) || 0;
+        updateCartSummary(initialDiscountPercentage);
+
+        // Add event listener for remove item buttons
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const productId = this.getAttribute('data-product-id');
+                const size = this.getAttribute('data-size');
+                const variantDescription = this.getAttribute('data-variant-description');
+
+                // Confirm before removing item
+                if (confirm("Are you sure you want to remove this item from the cart?")) {
+                    $.post("/CartItems/RemoveFromCart", { productId: productId, size: size, variantDescription: variantDescription }, function (response) {
+                        if (response.success) {
+                            // Remove the item row from the table
+                            button.closest('tr').remove();
+
+                            // Use stored discount percentage from the hidden field
+                            const discountPercentage = parseFloat(document.getElementById("discount-percentage").value) || 0;
+                            updateCartSummary(discountPercentage);
+                        } else {
+                            alert(response.message);
+                        }
+                    });
+                }
+            });
+        });
+
+
+    </script>
+
+</body>
+
+</html>

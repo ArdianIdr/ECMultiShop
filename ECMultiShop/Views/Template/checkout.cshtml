@@ -1,0 +1,475 @@
+@model ECMultiShop.Models.CategoryViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MultiShop - Online Shop Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="~/Content/Assets/img/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Content/Assets/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/Content/Assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Content/Assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row bg-secondary py-1 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center h-100">
+                    <a class="text-body mr-3" href="@Url.Action("About","Home")">About</a>
+                    <a class="text-body mr-3" href="@Url.Action("Contact","Home")">Contact</a>
+                    <a class="text-body mr-3" href="">Help</a>
+                    <a class="text-body mr-3" href="">FAQs</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @User.Identity.Name 
+                            }
+                            else
+                            {
+                                <text>My Account</text>
+                            }
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form action="@Url.Action("Logoff", "Account")" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">Logoff</button>
+                                </form>
+                                <a class="dropdown-item" href="@Url.Action("OrderHistory", "Home")">Your Order History</a>
+
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign in</a>
+                                <a class="dropdown-item" href="@Url.Action("Register", "Account")">Sign up</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="@Url.Action("Index","Home")" class="text-decoration-none">
+                    <span class="h1 text-uppercase text-primary bg-dark px-2">Multi</span>
+                    <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
+                </a>
+            </div>
+            <div class="col-lg-4 col-6 text-left">
+                <form action="/Home/Shop" method="GET">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="searchQuery" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0">Customer Service</p>
+                <h5 class="m-0">+012 345 6789</h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid bg-dark mb-30">
+        <div class="row px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
+                    <div class="navbar-nav w-100">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <div class="nav-item dropdown dropright">
+                                <a href="@Url.Action("Shop", new { categoryId = category.Id })" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    @category.Name
+                                    <i class="fa fa-angle-right float-right mt-1"></i>
+                                </a>
+                                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                                    @foreach (var subCategory in category.SubCategories)
+                                    {
+                                        <a href="@Url.Action("Shop", new { subCategoryId = subCategory.Id })" class="dropdown-item">@subCategory.Name</a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <span class="h1 text-uppercase text-dark bg-light px-2">Multi</span>
+                        <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Shop</span>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="@Url.Action("Index","Home")" class="nav-item nav-link">Home</a>
+                            <a href="@Url.Action("Shop","Home")" class="nav-item nav-link">Shop</a>
+                            <a href="@Url.Action("About","Home")" class="nav-item nav-link">About</a>
+                            @*   <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
+                                    <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                                        <a href="cart.html" class="dropdown-item">Shopping Cart</a>
+                                        <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                    </div>
+                                </div>*@
+                            <a href="@Url.Action("Contact","Home")" class="nav-item nav-link">Contact</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                            <a href="@Url.Action("Wishlist","Home")" class="btn px-0">
+                                <i class="fas fa-heart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;"> @ViewBag.WishlistCount</span>
+                            </a>
+                            <a href="@Url.Action("Cart","Home")" class="btn px-0 ml-3">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">@ViewBag.TotalProducts</span>
+                            </a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a href="/Home/OrderHistory" class="btn px-0 ml-3" style="display: inline-block; visibility: visible; opacity: 1; color: yellow;">
+                                    <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+                                    <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">
+                                        @ViewBag.TotalOrders
+                                    </span>
+                                </a>
+                           
+
+                            }
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="@Url.Action("Index","Home")">Home</a>
+                    <span class="breadcrumb-item active"> Checkout</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    <div>
+        @RenderBody();
+    </div>
+    <!-- Checkout Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-8">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
+                @using (Html.BeginForm("SaveBillingAddress", "Billing", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="bg-light p-30 mb-5">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.FirstName, "First Name")
+                                @Html.TextBoxFor(m => m.BillingAddress.FirstName, new { @class = "form-control", id = "BillingAddress_FirstName", placeholder = "John", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.FirstName)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.LastName, "Last Name")
+                                @Html.TextBoxFor(m => m.BillingAddress.LastName, new { @class = "form-control", id = "BillingAddress_LastName", placeholder = "Doe", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.LastName)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.Email, "E-mail")
+                                @Html.TextBoxFor(m => m.BillingAddress.Email, new { @class = "form-control", id = "BillingAddress_Email", placeholder = "example@email.com", required = "required", value = ViewBag.UserEmail, @readonly = "readonly" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.Email)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.MobileNo, "Mobile No")
+                                @Html.TextBoxFor(m => m.BillingAddress.MobileNo, new { @class = "form-control", id = "BillingAddress_MobileNo", placeholder = "+123 456 789", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.MobileNo)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.AddressLine1, "Address Line 1")
+                                @Html.TextBoxFor(m => m.BillingAddress.AddressLine1, new { @class = "form-control", id = "BillingAddress_AddressLine1", placeholder = "123 Street", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.AddressLine1)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.AddressLine2, "Address Line 2")
+                                @Html.TextBoxFor(m => m.BillingAddress.AddressLine2, new { @class = "form-control", placeholder = "Apartment or Suite" })
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.Country, "Country")
+                                @Html.DropDownListFor(
+                                    m => m.BillingAddress.Country,
+                                    new SelectList(new[] { "Albania", "Kosovo", "North Macedonia" }, "Select Country"),
+                                    "Select Country",
+                                    new { @class = "custom-select", id = "BillingAddress_Country" }
+                                )
+                                @Html.ValidationMessageFor(m => m.BillingAddress.Country)
+                            </div>
+
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.City, "City")
+                                @Html.TextBoxFor(m => m.BillingAddress.City, new { @class = "form-control", id = "BillingAddress_City", placeholder = "New York", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.City)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.Municipality, "Municipality")
+                                @Html.TextBoxFor(m => m.BillingAddress.Municipality, new { @class = "form-control", id = "BillingAddress_Municipality", placeholder = "Municipality", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.Municipality)
+                            </div>
+                            <div class="col-md-6 form-group">
+                                @Html.LabelFor(m => m.BillingAddress.ZipCode, "ZIP Code")
+                                @Html.TextBoxFor(m => m.BillingAddress.ZipCode, new { @class = "form-control", id = "BillingAddress_ZipCode", placeholder = "12345", required = "required" })
+                                @Html.ValidationMessageFor(m => m.BillingAddress.ZipCode)
+                            </div>
+                        </div>
+
+                        @*                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        *@                <button type="submit" class="btn btn-primary mt-3" id="checkout-button">Submit</button>
+
+
+                    </div>
+                }
+            </div>
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-secondary pr-3">Order Summary</span>
+                </h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom">
+                        <h6 class="mb-3">Products</h6>
+                        @foreach (var item in (IEnumerable<CartItem>)Model.CartItems)
+                        {
+                            <div class="d-flex justify-content-between">
+                                <p>@item.Product.Name x @item.Quantity</p>
+                                <p>@string.Format("{0:C}", item.UnitPrice * item.Quantity)</p>
+                            </div>
+                        }
+                    </div>
+                    <div class="border-bottom pt-3 pb-2">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>Subtotal</h6>
+                            <h6>@string.Format("{0:C}", ViewBag.Subtotal)</h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Shipping</h6>
+                            <h6 class="font-weight-medium">$5.00</h6>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Discount</h6>
+                            <h6>@string.Format("-{0:C}", ViewBag.DiscountAmount)</h6>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5>Total</h5>
+                            <h5>@string.Format("{0:C}", ViewBag.Total)</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout End -->
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
+                <p class="mb-4">We would love to hear from you! Feel free to reach out for any inquiries or support. Our team is here to assist you with any questions or concerns you may have. We value your feedback and aim to provide the best service possible.</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Kumanovo, North Macedonia</p>
+                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@multishop.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+389 70 561262</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-secondary mb-2" href="@Url.Action("Index","Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-secondary mb-2" href="@Url.Action("Shop","Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                            <a class="text-secondary" href="@Url.Action("Contact","Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="col-md-4 mb-5">
+                            <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+                            <div class="d-flex flex-column justify-content-start">
+                                <a class="text-secondary mb-2" href="@Url.Action("Index", "Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("Shop", "Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("OrderHistory", "Home")"><i class="fa fa-angle-right mr-2"></i>Your Order History</a>
+                                <a class="text-secondary" href="@Url.Action("Contact", "Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4 mb-5">
+
+                        </div>
+                    }
+                    <div class="col-md-4 mb-5">
+                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                        <div class="d-flex">
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-secondary">
+                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
+                    by
+                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
+                    <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="~/Content/Assets/img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="~/Content/Assets/lib/easing/easing.min.js"></script>
+    <script src="~/Content/Assets/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="~/Content/Assets/mail/jqBootstrapValidation.min.js"></script>
+    <script src="~/Content/Assets/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/Content/Assets/js/main.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // ndalon qe klasa dropdown-toggle te ndaloje navigimin me klikim ne kategori (login) dhe dropdowni per kategorit
+        document.querySelectorAll('.nav-link.dropdown-toggle').forEach(function (element) {
+            element.addEventListener('click', function (event) {
+                if (this.getAttribute('href') !== '#') {
+                    window.location.href = this.getAttribute('href');
+                }
+            });
+        });
+
+$(document).ready(function () {
+    $('#checkout-button').click(function (e) {
+        e.preventDefault();
+
+
+        // validon
+        var form = $(this).closest('form')[0]; // merr elementet e formes
+        if (!form.checkValidity()) {
+            // nese nuk eshte valide tregon
+            form.reportValidity();
+            return; // ndalon ekzekutimin
+        }
+
+        // merr te dhenat nga forma
+        var billingAddress = {
+            FirstName: $('#BillingAddress_FirstName').val(),
+            LastName: $('#BillingAddress_LastName').val(),
+            Email: $('#BillingAddress_Email').val(),
+            MobileNo: $('#BillingAddress_MobileNo').val(),
+            AddressLine1: $('#BillingAddress_AddressLine1').val(),
+            City: $('#BillingAddress_City').val(),
+            Municipality: $('#BillingAddress_Municipality').val(),
+            Country: $('#BillingAddress_Country').val(),
+            ZipCode: $('#BillingAddress_ZipCode').val()
+        };
+
+        // ruan te dhenat tek url e dhene
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SaveBillingAddress", "Billing")',
+            data: billingAddress,
+            success: function (response) {
+                if (response.success) {
+                    // vazhdon ne krijimin e sesionit per stripen
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("CreateCheckoutSession", "Orders")',
+                        success: function (checkoutResponse) {
+                            if (checkoutResponse.id) {
+                                var stripe = Stripe('pk_test_51PEcZsJjOnxsjQ4OabaF2mFOAf0eOUjdO9EypK4TJiGhqZIq4O6KkPIaG7KGs8gOLWsF2R6zczyyYWpdKdfEldRT005twnUgpO');
+                                stripe.redirectToCheckout({ sessionId: checkoutResponse.id }).then(function (result) {
+                                    if (result.error) {
+                                        alert(result.error.message);
+                                    }
+                                });
+                            } else {
+                                alert('Error creating Stripe session');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert("An error occurred: " + error);
+                        }
+                    });
+                } else {
+                    alert('Error saving billing address: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("An error occurred while saving billing address: " + error);
+            }
+        });
+    });
+});
+
+    </script>
+</body>
+</html>

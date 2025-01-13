@@ -1,0 +1,82 @@
+﻿@model ECMultiShop.Models.OrderItem
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+</head>
+<body>
+    <div>
+        <h4>OrderItem</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Order.FirstName)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Order.FirstName)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Stock.Size)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Stock.Size)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.ProductName)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Size)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Size)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.VariantDescription)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.VariantDescription)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.Quantity)
+            </dd>
+    
+            <dt>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </dt>
+    
+            <dd>
+                @Html.DisplayFor(model => model.UnitPrice)
+            </dd>
+    
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</body>
+</html>

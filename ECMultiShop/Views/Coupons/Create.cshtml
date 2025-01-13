@@ -1,0 +1,378 @@
+﻿@model ECMultiShop.Models.Coupon
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MultiShop - Admin Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Content/AdminAssets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="~/Content/AdminAssets/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Content/AdminAssets/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="~/Content/AdminAssets/css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+        <!-- Sidebar Start -->
+        <div class="sidebar pe-4 pb-3">
+            <nav class="navbar bg-light navbar-light">
+                <div class="d-flex align-items-center ms-4 mb-4">
+                    <div class="position-relative">
+                        <img class="rounded-circle" src="~/Content/AdminAssets/img/admini.jpg" alt="" style="width: 40px; height: 40px;">
+                        <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="mb-0">@ViewBag.UserName</h6>
+                        <span>Admin</span>
+                    </div>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="@Url.Action("Admin","Home")" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-solid fa-paint-brush"></i> UI/UX</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="@Url.Action("Index","Carousels")" class="dropdown-item">Change Carousel Images</a>
+                            <a href="@Url.Action("Index","Offers")" class="dropdown-item">Make Offers </a>
+                            <a href="@Url.Action("Index","Teams")" class="dropdown-item">Team</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa fa-solid fa-list" aria-hidden="true"></i>
+                            Category / Sub
+                        </a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="@Url.Action("Index","Categories")" class="dropdown-item">Categories</a>
+                            <a href="@Url.Action("Index","Subcategories")" class="dropdown-item">Subcategories </a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">
+                            <i class="fa fa-briefcase" aria-hidden="true"></i>
+                            Products / Stock
+                        </a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="@Url.Action("Index","Products")" class="dropdown-item">Products</a>
+                            <a href="@Url.Action("Index","Stocks")" class="dropdown-item">Stock Level </a>
+                            <a href="@Url.Action("Index","Photos")" class="dropdown-item">Product Images </a>
+                            <a href="@Url.Action("Index","Coupons")" class="dropdown-item">Coupons</a>
+
+                        </div>
+                    </div>
+
+                    <a href="@Url.Action("Index","Orders")" class="nav-item nav-link"><i class="fa fa-solid fa-dollar-sign"></i> Sales</a>
+                    <a href="@Url.Action("Users","Account")" class="nav-item nav-link"><i class="fa fa-solid fa-user"></i> Users</a>
+
+                </div>
+            </nav>
+        </div>
+        <!-- Sidebar End -->
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+                <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
+                    <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
+                </a>
+                <a href="#" class="sidebar-toggler flex-shrink-0">
+                    <i class="fa fa-bars"></i>
+                </a>
+                <div class="navbar-nav align-items-center ms-auto">
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa fa-envelope me-lg-2"></i>
+                            <span class="d-none d-lg-inline-flex">Reviews</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0 dropdown-menu-notifications">
+                            @if (ViewBag.UnreadNotifications != null && ViewBag.UnreadNotifications.Count > 0)
+                            {
+                                foreach (var notification in ViewBag.UnreadNotifications)
+                                {
+                                    <div class="dropdown-item d-flex align-items-center">
+                                        <a href="@Url.Action("Index", "Reviews")" class="flex-grow-1 text-decoration-none text-dark">
+                                            <h6 class="mb-0">@notification.Title</h6>
+                                            <small>@notification.Message</small>
+                                            <small class="text-muted">@notification.CreatedAt.ToString("g")</small>
+                                        </a>
+                                        <button type="button" class="btn-close ms-2" aria-label="Close" onclick="removeNotification('@notification.Id')"></button>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="dropdown-item">No new notifications</span>
+                            }
+                        </div>
+
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa fa-bell me-lg-2"></i>
+                            <span class="d-none d-lg-inline-flex">Notifications</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0 dropdown-menu-notifications">
+
+                            @if (ViewBag.LowStockProducts != null && ViewBag.LowStockProducts.Count > 0)
+                            {
+                                foreach (var product in ViewBag.LowStockProducts)
+                                {
+                                    <a href="@Url.Action("Index","Stocks")" class="dropdown-item text-danger">
+                                        <h6 class="mb-0">Low Stock Alert</h6>
+                                        <small>@product.ProductName - Only @product.StockQuantity left!</small>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                }
+                            }
+
+                            @if
+                                 (ViewBag.LowStockProducts == null || ViewBag.LowStockProducts.Count == 0)
+                            {
+                                <span class="dropdown-item">No new notifications</span>
+                            }
+                        </div>
+                    </div>
+
+
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <img class="rounded-circle me-lg-2" src="~/Content/AdminAssets/img/admini.jpg" alt="" style="width: 40px; height: 40px;">
+                            <span class="d-none d-lg-inline-flex">@ViewBag.UserName</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form action="@Url.Action("Logoff", "Account")" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item">Log out</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign in</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <!-- Navbar End -->
+            <br />
+            <!-- Create Coupon Start -->
+            <div class="col-10">
+                <div class="bg-light rounded h-100 p-4">
+                    <h4>Create Coupon</h4>
+                    <hr />
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row mb-3">
+                            @Html.LabelFor(model => model.Code, "Code", new { @class = "col-sm-2 col-form-label" })
+                            <div class="col-sm-10">
+                                @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            @Html.LabelFor(model => model.DiscountPercentage, "Discount Percentage", new { @class = "col-sm-2 col-form-label" })
+                            <div class="col-sm-10">
+                                @Html.EditorFor(model => model.DiscountPercentage, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.DiscountPercentage, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            @Html.LabelFor(model => model.IsActive, "Is Active", new { @class = "col-sm-2 col-form-label" })
+                            <div class="col-sm-10">
+                                <div class="form-check">
+                                    @Html.EditorFor(model => model.IsActive, new { htmlAttributes = new { @class = "form-check-input" } })
+                                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            @Html.LabelFor(model => model.ExpirationDate, "Expiration Date", new { @class = "col-sm-2 col-form-label" })
+                            <div class="col-sm-10">
+                                @Html.EditorFor(model => model.ExpirationDate, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ExpirationDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            @Html.LabelFor(model => model.UsageLimit, "Usage Limit", new { @class = "col-sm-2 col-form-label" })
+                            <div class="col-sm-10">
+                                @Html.EditorFor(model => model.UsageLimit, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.UsageLimit, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary ms-2" })
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Create Coupon End -->
+        </div>
+        <!-- Content End -->
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/chart/chart.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/easing/easing.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/waypoints/waypoints.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="~/Content/AdminAssets/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/Content/AdminAssets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function removeNotification(notificationId) {
+            // fshirja e notificationit nga ui
+            const notificationElement = event.target.closest('.dropdown-item');
+            notificationElement.nextElementSibling?.remove(); // notification i dyt zhvendoset automatikisht lart ne vend te teparit
+
+            notificationElement.remove();
+
+            // dergo ajax request ne controller qe te fshihet notificationi
+            $.ajax({
+                url: '/Reviews/Clear',
+                type: 'POST',
+                data: { id: notificationId },
+                success: function () {
+                    console.log('Notification cleared.');
+                },
+                error: function () {
+                    console.error('Failed to clear notification.');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
+
+
+@*<!DOCTYPE html>
+
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Create</title>
+    </head>
+    <body>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <h4>Coupon</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Code, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DiscountPercentage, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.DiscountPercentage, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DiscountPercentage, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <div class="checkbox">
+                            @Html.EditorFor(model => model.IsActive)
+                            @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ExpirationDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.ExpirationDate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ExpirationDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UsageLimit, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.UsageLimit, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.UsageLimit, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UsageCount, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.UsageCount, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.UsageCount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Create" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div>
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    </body>
+    </html>*@

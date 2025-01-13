@@ -1,0 +1,254 @@
+﻿
+@model ECMultiShop.Models.CategoryViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MultiShop - Online Shop Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="~/Content/Assets/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Content/Assets/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/Content/Assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Content/Assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    @foreach (var pr in Model.Products)
+    {
+
+        <!-- Shop Detail Start -->
+        <div class="container-fluid pb-5">
+            <div class="row px-xl-5">
+                <!-- Product Carousel -->
+                <div class="col-lg-5 mb-30">
+                    <div id="product-carousel" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner bg-light">
+                            @if (pr.Photos != null && pr.Photos.Any())
+                            {
+                                var firstPhoto = true;
+                                foreach (var photo in pr.Photos)
+                                {
+                                    <div class="carousel-item @(firstPhoto ? "active" : "")">
+                                        <img class="w-100 h-100" src="@Url.Content(photo.ProductImage.Replace("~", ""))" alt="@pr.Name" />
+                                    </div>
+                                    firstPhoto = false; // Set `firstPhoto` to false after the first iteration
+                                }
+                            }
+                            else
+                            {
+                                <div class="carousel-item active">
+                                    <img class="w-100 h-100" src="@Url.Content("/Content/ProductImages/DEFAULT.png")" alt="No Image Available" />
+                                </div>
+                            }
+                        </div>
+
+                        <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
+                            <i class="fa fa-2x fa-angle-left text-dark"></i>
+                        </a>
+                        <a class="carousel-control-next" href="#product-carousel" data-slide="next">
+                            <i class="fa fa-2x fa-angle-right text-dark"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Name Display -->
+                <div class="col-lg-7 h-auto mb-30">
+                    <div class="h-100 bg-light p-30">
+                        <h3>@pr.Name</h3>
+
+                        <!-- Product Price Display -->
+                        <h4 class="font-weight-semi-bold mb-4" id="priceDisplay-@pr.Id">
+                            @if (pr.SalePrice.HasValue)
+                            {
+                                <span class="text-muted"><del>@pr.Price.ToString("C")</del></span> @pr.SalePrice.Value.ToString("C")
+                            }
+                            else
+                            {
+                                @pr.Price.ToString("C")
+                            }
+                        </h4>
+
+                        <span id="basePrice-@pr.Id" data-price="@pr.Price"></span>
+                        @if (pr.SalePrice.HasValue)
+                        {
+                            <span id="baseSalePrice-@pr.Id" data-saleprice="@pr.SalePrice.Value"></span>
+                        }
+
+
+
+                        <!-- Sizes (Distinct) -->
+                        @if (pr.StockItems.Any(stock => !string.IsNullOrEmpty(stock.Size) && stock.IsActive))
+                        {
+                            <div class="d-flex mb-3">
+                                <strong class="text-dark mr-3">Sizes:</strong>
+                                <form id="sizeForm-@pr.Id">
+                                    @foreach (var stock in pr.StockItems
+                                        .Where(si => !string.IsNullOrEmpty(si.Size) && si.IsActive)
+                                        .GroupBy(si => si.Size)
+                                        .Select(group => group.First()))
+                                    {
+                                        var isChecked = stock.SalePrice.HasValue
+                                            ? stock.SalePrice.Value == pr.StockItems.First().SalePrice
+                                            : stock.Price == pr.StockItems.First().Price;
+
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" id="size-@pr.Id-@stock.Size"
+                                                   name="size-@pr.Id" value="@stock.Size" @(isChecked ? "checked" : "")>
+                                            <label class="custom-control-label" for="size-@pr.Id-@stock.Size">@stock.Size</label>
+                                        </div>
+                                    }
+                                </form>
+                            </div>
+                        }
+
+                        <!-- Colors (Distinct) -->
+                        @if (pr.StockItems.Any(stock => !string.IsNullOrEmpty(stock.VariantDescription) && stock.IsActive))
+                        {
+                            <div class="d-flex mb-3">
+                                <strong class="text-dark mr-3">Colors:</strong>
+                                <form id="colorForm-@pr.Id">
+                                    @foreach (var stock in pr.StockItems
+                                        .Where(si => !string.IsNullOrEmpty(si.VariantDescription) && si.IsActive)
+                                        .GroupBy(si => si.VariantDescription)
+                                        .Select(group => group.First()))
+                                    {
+                                        var isChecked = stock.SalePrice.HasValue
+                                            ? stock.SalePrice.Value == pr.StockItems.First().SalePrice
+                                            : stock.Price == pr.StockItems.First().Price;
+
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" id="color-@pr.Id-@stock.VariantDescription"
+                                                   name="color-@pr.Id" value="@stock.VariantDescription" @(isChecked ? "checked" : "")>
+                                            <label class="custom-control-label" for="color-@pr.Id-@stock.VariantDescription">@stock.VariantDescription</label>
+                                        </div>
+                                    }
+                                </form>
+                            </div>
+                        }
+
+                        <!-- Hidden inputs for stock data -->
+                        @foreach (var stock in pr.StockItems.Where(si => si.IsActive))
+                        {
+                            <input type="hidden" id="stock-@pr.Id-@stock.Size-@stock.VariantDescription"
+                                   data-size="@stock.Size"
+                                   data-color="@stock.VariantDescription"
+                                   data-price="@stock.Price"
+                                   data-saleprice="@(stock.SalePrice.HasValue ? stock.SalePrice.Value.ToString() : "null")"
+                                   data-stock="@stock.Quantity" />
+                        }
+
+                        <!-- Add to Cart Button -->
+                        <div class="d-flex align-items-center mb-4 pt-2">
+                            <div class="input-group quantity mr-3" style="width: 130px;">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary btn-minus">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control bg-secondary border-0 text-center" id="quantity-@pr.Id" value="1">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary btn-plus">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary px-3" id="addToCart-@pr.Id">
+                                <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
+                            </button>
+                        </div>
+
+
+                        <!-- Social Share -->
+                        <div class="d-flex pt-2">
+                            <strong class="text-dark mr-2">Share on:</strong>
+                            <div class="d-inline-flex">
+                                <a class="text-dark px-2" href="#">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a class="text-dark px-2" href="#">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a class="text-dark px-2" href="#">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a class="text-dark px-2" href="#">
+                                    <i class="fab fa-pinterest"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+              <!-- JavaScript Libraries -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+  <script src="~/Content/Assets/lib/easing/easing.min.js"></script>
+  <script src="~/Content/Assets/lib/owlcarousel/owl.carousel.min.js"></script>
+
+  <!-- Contact Javascript File -->
+  <script src="~/Content/Assets/mail/jqBootstrapValidation.min.js"></script>
+  <script src="~/Content/Assets/mail/contact.js"></script>
+
+  <!-- Template Javascript -->
+  <script src="~/Content/Assets/js/main.js"></script>
+            <!-- Product Description and Reviews -->
+            <div class="row px-xl-5">
+                <div class="col">
+                    <div class="bg-light p-30">
+                        <div class="nav nav-tabs mb-4">
+                            <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Description</a>
+                        </div>
+                        <div class="tab-content">
+                            <!-- Product Description -->
+                            <div class="tab-pane fade show active" id="tab-pane-1">
+                                <h4 class="mb-3">@pr.Name's Description</h4>
+                                <ul class="mb-4">
+                                    @foreach (var line in pr.Description.Split(new[] { "\n" }, StringSplitOptions.None))
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(line))
+                                        {
+                                            <li>@line</li>
+                                            <!-- Show bullet for lines with text -->
+                                        }
+                                        else
+                                        {
+                                            <li style="list-style-type: none;">&nbsp;</li>
+                                            <!-- Add space without bullet for empty lines -->
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Shop Detail End -->
+    }
+
+
+</body>
+
+</html>
+
+
+ 

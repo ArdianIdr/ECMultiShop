@@ -1,0 +1,973 @@
+@model ECMultiShop.Models.CategoryViewModel
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MultiShop - Online Shop Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Content/Assets/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/Content/Assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Content/Assets/css/style.css" rel="stylesheet">
+    <style>
+        .product-item {
+            width: 100%; 
+            max-width: 380px;
+            height: 490px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-img {
+            height: 550px; 
+        }
+
+            .product-img img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; 
+            }
+
+      
+        .product-item.unavailable {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+
+            .product-item.unavailable:hover {
+                opacity: 0.6; 
+            }
+
+            .product-item.unavailable .product-img::after {
+                content: "Unavailable";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 5px 10px;
+                font-size: 14px;
+                border-radius: 5px;
+            }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start -->
+
+
+
+    <div class="container-fluid">
+        <div class="row bg-secondary py-1 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center h-100">
+                    <a class="text-body mr-3" href="@Url.Action("About","Home")">About</a>
+                    <a class="text-body mr-3" href="@Url.Action("Contact","Home")">Contact</a>
+                    <a class="text-body mr-3" href="">Help</a>
+                    <a class="text-body mr-3" href="">FAQs</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @User.Identity.Name
+                            }
+                            else
+                            {
+                                <text>My Account</text>
+                            }
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form action="@Url.Action("Logoff", "Account")" method="post">
+                                    @Html.AntiForgeryToken() 
+                                    <button type="submit" class="dropdown-item">Logoff</button>
+                                </form>
+                                <a class="dropdown-item" href="@Url.Action("OrderHistory", "Home")">Your Order History</a>
+
+                            }
+                            else
+                            {
+                                <a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign in</a>
+                                <a class="dropdown-item" href="@Url.Action("Register", "Account")">Sign up</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="d-inline-flex align-items-center d-block d-lg-none">
+                    <a href="" class="btn px-0 ml-2">
+                        <i class="fas fa-heart text-dark"></i>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                    </a>
+                    <a href="" class="btn px-0 ml-2">
+                        <i class="fas fa-shopping-cart text-dark"></i>
+                        <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
+            <div class="col-lg-4">
+                <a href="@Url.Action("Index","Home")" class="text-decoration-none">
+                    <span class="h1 text-uppercase text-primary bg-dark px-2">Multi</span>
+                    <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-6 text-left">
+                <form id="searchForm" action="/Home/Shop" method="GET">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="searchQuery" id="searchQuery" placeholder="Search for products" value="@Request.QueryString["searchQuery"]">
+                        <div class="input-group-append">
+                            <button type="submit" class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="col-lg-4 col-6 text-right">
+                <p class="m-0">Customer Service</p>
+                <h5 class="m-0">+012 345 6789</h5>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid bg-dark mb-30">
+        <div class="row px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
+                    <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
+                    <div class="navbar-nav w-100">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <div class="nav-item dropdown dropright">
+                                <a href="@Url.Action("Shop", new { categoryId = category.Id })" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    @category.Name
+                                    <i class="fa fa-angle-right float-right mt-1"></i>
+                                </a>
+                                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+                                    @foreach (var subCategory in category.SubCategories)
+                                    {
+                                        <a href="@Url.Action("Shop", new { subCategoryId = subCategory.Id })" class="dropdown-item">@subCategory.Name</a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </nav>
+            </div>
+
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <span class="h1 text-uppercase text-dark bg-light px-2">Multi</span>
+                        <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Shop</span>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="@Url.Action("Index","Home")" class="nav-item nav-link">Home</a>
+                            <a href="@Url.Action("Shop","Home")" class="nav-item nav-link active">Shop</a>
+                            <a href="@Url.Action("About","Home")" class="nav-item nav-link">About</a>
+                            @* <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
+                                    <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
+                                        <a href="cart.html" class="dropdown-item">Shopping Cart</a>
+                                        <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                    </div>
+                                </div>*@
+                            <a href="@Url.Action("Contact","Home")" class="nav-item nav-link">Contact</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                            <a href="@Url.Action("Wishlist","Home")" class="btn px-0">
+                                <i class="fas fa-heart text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;"> @ViewBag.WishlistCount</span>
+                            </a>
+                            <a href="@Url.Action("Cart","Home")" class="btn px-0 ml-3">
+
+                                <i class="fas fa-shopping-cart  text-primary"></i>
+                                <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">@ViewBag.TotalProducts</span>
+                            </a>
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a href="/Home/OrderHistory" class="btn px-0 ml-3" style="display: inline-block; visibility: visible; opacity: 1; color: yellow;">
+                                    <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+                                    <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">
+                                        @ViewBag.TotalOrders
+                                    </span>
+                                </a>
+                          
+
+                            }
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="@Url.Action("Index","Home")">Home</a>
+                    <span class="breadcrumb-item active">Shop</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    <!-- Shop Start -->
+    <input type="hidden" id="categoryId" value="@ViewBag.CategoryId" />
+    <input type="hidden" id="subCategoryId" value="@ViewBag.SubCategoryId" />
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <!-- Shop Sidebar Start -->
+            <div class="col-lg-3 col-md-4">
+                <!-- Price Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form id="filterForm" method="GET" action="/Home/Shop">
+                        <input type="hidden" name="searchQuery" value="@Request.QueryString["searchQuery"]">
+                        <input type="hidden" name="categoryId" value="@ViewBag.CategoryId">
+                        <input type="hidden" name="subCategoryId" value="@ViewBag.SubCategoryId">
+                        <input type="hidden" name="sortOrder" value="@Request.QueryString["sortOrder"]">
+
+                        <!-- All Price Filter -->
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" checked id="price-all">
+                            <label class="custom-control-label" for="price-all">All Price</label>
+                            <span class="badge border font-weight-normal">
+                                @(((Dictionary<string, int>)ViewBag.PriceRanges)?.Values.Sum() ?? 0)
+                            </span>
+                        </div>
+
+                        <!-- Render each price range filter -->
+                        @if (ViewBag.PriceRanges != null)
+                        {
+                            foreach (var priceRange in (Dictionary<string, int>)ViewBag.PriceRanges)
+                            {
+                                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                    <input type="checkbox" class="custom-control-input" id="price-@priceRange.Key" name="price" value="@priceRange.Key">
+                                    <label class="custom-control-label" for="price-@priceRange.Key">
+                                        $@priceRange.Key.Replace("-", " - $")
+                                    </label>
+                                    <span class="badge border font-weight-normal">@priceRange.Value</span>
+                                </div>
+                            }
+                        }
+                    </form>
+                </div>
+                <!-- Price End -->
+                <!-- Colors Filter Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by color</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form>
+                        <!-- "All Colors" option -->
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" checked id="color-all">
+                            <label class="custom-control-label" for="color-all">All Colors</label>
+                            <span class="badge border font-weight-normal">
+                                @(((Dictionary<string, int>)ViewBag.ColorCount)?.Values.Sum() ?? 0)
+                            </span>
+                        </div>
+
+                        <!-- Render each color -->
+                        @if (ViewBag.ColorCount != null)
+                        {
+                            foreach (var color in (Dictionary<string, int>)ViewBag.ColorCount)
+                            {
+                                <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                    <input type="checkbox" class="custom-control-input" id="color-@color.Key" name="colors" value="@color.Key">
+                                    <label class="custom-control-label" for="color-@color.Key">@color.Key</label>
+                                    <span class="badge border font-weight-normal">@color.Value</span>
+                                </div>
+                            }
+                        }
+                    </form>
+                </div>
+                <!-- Colors Filter End -->
+                <!-- Size Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by size</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form>
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" checked id="size-all">
+                            <label class="custom-control-label" for="size-all">All Sizes</label>
+                            <span class="badge border font-weight-normal">
+                                @(((Dictionary<string, int>)ViewBag.SizeCounts)?.Values.Sum() ?? 0)
+                            </span>
+                        </div>
+
+                        @foreach (var size in (Dictionary<string, int>)ViewBag.SizeCounts)
+                        {
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="size-@size.Key" name="size" value="@size.Key">
+                                <label class="custom-control-label" for="size-@size.Key">@size.Key</label>
+                                <span class="badge border font-weight-normal">@size.Value</span>
+                            </div>
+                        }
+                    </form>
+                </div>
+                <!-- Size End -->
+
+            </div>
+            <!-- Shop Sidebar End -->
+            <div class="col-lg-9 col-md-8">
+                <div class="row pb-3">
+                    <div class="col-12 pb-1">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                            </div>
+                            <div class="ml-2">
+                                <div class="btn-group mt-2">
+                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="#" data-sort="latest">Latest</a>
+                                        <a class="dropdown-item" href="#" data-sort="sales">Sales Only</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row" id="product-container">
+                            @if (!Model.Products.Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <p class="text-muted">No products found.</p>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var product in Model.Products)
+                            {
+                                // filtrojm stockitem aktiv
+                                var activeStocks = product.StockItems.Where(s => s.IsActive && s.Quantity > 0).ToList();
+                                bool isAvailable = activeStocks.Any();
+
+                                // vler pricev
+                                decimal? displayPrice = null;
+                                decimal? displaySalePrice = null;
+
+                                if (isAvailable)
+                                {
+                                    // shikojm nese cmimet ne stock item kan vler nese po ather perdori ato nese jo kontrollo produkt modelin
+                                    var stockWithPrice = activeStocks.FirstOrDefault(s => s.Price.HasValue || s.SalePrice.HasValue);
+
+
+                                    // nese gjendet nje stockitem me cmim, perdore ate 
+                                    if (stockWithPrice != null)
+                                    {
+                                        displayPrice = stockWithPrice.Price;
+                                        displaySalePrice = stockWithPrice.SalePrice;
+                                    }
+                                    else
+                                    {
+                                   
+                                        displayPrice = product.Price;
+                                        displaySalePrice = product.SalePrice;
+                                    }
+                                }
+
+                                <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                                    <div class="product-item bg-light mb-4 @(isAvailable ? "" : "unavailable")">
+                                        <!-- Image Container -->
+                                        <div class="product-img position-relative overflow-hidden">
+                                            <img class="img-fluid"
+                                                 src="@Url.Content(product.Photos.Any() ? product.Photos.FirstOrDefault()?.ProductImage : "~/Content/ProductImages/DEFAULT.png")"
+                                                 alt="@product.Name" />
+
+                                            <!-- Product Action Buttons -->
+                                            <div class="product-action">
+                                                @if (isAvailable)
+                                                {
+                                                    <a href="#" class="btn btn-outline-dark btn-square add-to-cart"
+                                                       data-toggle="modal"
+                                                       data-target="#productDetailModal"
+                                                       data-product-id="@product.Id">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+
+                                                    if (User.Identity.IsAuthenticated)
+                                                    {
+                                                        <a href="#" class="btn btn-outline-dark btn-square add-to-wishlist" data-product-id="@product.Id">
+                                                            <i class="far fa-heart"></i>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="#" class="btn btn-outline-dark btn-square" onclick="alert('You need to log in to add items to your wishlist!');">
+                                                            <i class="far fa-heart"></i>
+                                                        </a>
+                                                    }
+
+                                                    <a class="btn btn-outline-dark btn-square" href="@Url.Action("Details", "Products", new { id = product.Id })">
+                                                        <i class="fa fa-search"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="#" class="btn btn-outline-dark btn-square disabled" title="Product unavailable">
+                                                        <i class="fa fa-ban"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Product Details -->
+                                        <div class="text-center py-4">
+                                            <a class="h6 text-decoration-none text-truncate @(isAvailable ? "" : "text-muted")"
+                                               href="@(isAvailable ? Url.Action("Details", "Products", new { id = product.Id }) : "#")">
+                                                @product.Name
+                                            </a>
+                                            <div class="d-flex align-items-center justify-content-center mt-2">
+                                                @if (isAvailable && displaySalePrice.HasValue && displaySalePrice.Value < (displayPrice ?? 0))
+                                                {
+                                                    <h5>@(displaySalePrice.Value.ToString("C"))</h5>
+                                                    <h6 class="text-muted ml-2"><del>@(displayPrice?.ToString("C") ?? "N/A")</del></h6>
+                                                }
+                                                else if (isAvailable && displayPrice.HasValue)
+                                                {
+                                                    <h5>@(displayPrice.Value.ToString("C"))</h5>
+                                                }
+                                                else
+                                                {
+                                                    <h5 class="text-danger">Price not available</h5>
+                                                }
+                                            </div>
+
+
+                                            @if (!isAvailable)
+                                            {
+                                                <small class="text-danger">Out of stock or unavailable</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+
+
+
+
+                        </div>
+                    </div>
+
+                    <!-- Products End -->
+                </div>
+            </div>
+
+     
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <div class="col-12">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("Shop", new { page = Model.CurrentPage - 1 })">Previous</a>
+                            </li>
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Shop", new { page = i })">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action("Shop", new { page = Model.CurrentPage + 1 })">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Shop End -->
+    <div>
+        @RenderBody();
+    </div>
+    <!-- Modal for displaying product details -->
+    <div class="modal fade" id="productDetailModal" tabindex="-1" role="dialog" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="productDetailBody">
+                 
+                    <div class="text-center">
+                        <i class="fa fa-spinner fa-spin fa-3x"></i> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
+        <div class="row px-xl-5 pt-5">
+            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
+                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
+                <p class="mb-4">We would love to hear from you! Feel free to reach out for any inquiries or support. Our team is here to assist you with any questions or concerns you may have. We value your feedback and aim to provide the best service possible.</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>Kumanovo, North Macedonia</p>
+                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@multishop.com</p>
+                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+389 70 561262</p>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <div class="row">
+                    <div class="col-md-4 mb-5">
+                        <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                        <div class="d-flex flex-column justify-content-start">
+                            <a class="text-secondary mb-2" href="@Url.Action("Index","Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-secondary mb-2" href="@Url.Action("Shop","Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                            <a class="text-secondary" href="@Url.Action("Contact","Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                        </div>
+                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="col-md-4 mb-5">
+                            <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+                            <div class="d-flex flex-column justify-content-start">
+                                <a class="text-secondary mb-2" href="@Url.Action("Index", "Home")"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("Shop", "Home")"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                                <a class="text-secondary mb-2" href="@Url.Action("OrderHistory", "Home")"><i class="fa fa-angle-right mr-2"></i>Your Order History</a>
+                                <a class="text-secondary" href="@Url.Action("Contact", "Home")"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-4 mb-5">
+
+                        </div>
+                    }
+                    <div class="col-md-4 mb-5">
+                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                        <div class="d-flex">
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
+            <div class="col-md-6 px-xl-0">
+                <p class="mb-md-0 text-center text-md-left text-secondary">
+                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
+                    by
+                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
+                    <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                </p>
+            </div>
+            <div class="col-md-6 px-xl-0 text-center text-md-right">
+                <img class="img-fluid" src="~/Content/Assets/img/payments.png" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/Assets/lib/easing/easing.min.js"></script>
+    <script src="~/Content/Assets/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="~/Content/Assets/mail/jqBootstrapValidation.min.js"></script>
+    <script src="~/Content/Assets/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/Content/Assets/js/main.js"></script>
+    <script>
+
+$(document).ready(function () {
+    // apliko filtret kur checkboxi te aktivizohet
+    $("input[type='checkbox']").change(function () {
+        handleSelection($(this)); 
+        applyFilters();
+    });
+
+    // sortimi funksionaliteti
+    $(".dropdown-item").click(function (e) {
+        // aktivizohet kur useri klikon nje element te dropdown-it per te zgjedhur menyren e renditjes (sales only,price low to high etj), pastaj e percjell zgjedhjen te applyFiltersi
+        if ($(this).data('sort')) {
+            e.preventDefault(); // Prevent default only for sorting items
+            var sortOrder = $(this).data('sort'); // Get sort order from data attribute
+            applyFilters(sortOrder);
+        }
+    });
+
+    // ndalon qe klasa dropdown-toggle te ndaloje navigimin me klikim ne kategori (login) dhe dropdowni per kategorit
+    document.querySelectorAll('.nav-link.dropdown-toggle').forEach(function (element) {
+        element.addEventListener('click', function (event) {
+            if (this.getAttribute('href') !== '#') {
+                window.location.href = this.getAttribute('href');
+            }
+        });
+    });
+    // funksioni per me shtu ne wishlist produkte
+    document.querySelectorAll('.add-to-wishlist').forEach(function (element) {
+        element.addEventListener('click', function (event) {
+            event.preventDefault();  // kjo ndalon hapjen e ndonje faqe tjeter , kryen veprim te personalizuar
+            var productId = this.getAttribute('data-product-id');
+
+            // AJAX request per te bere add produkte ne wishlist
+            fetch('/Wishlists/AddToWishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId: productId })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Product added to wishlist!');
+                        location.reload()
+                    } else {
+                        alert('Error adding product to wishlist.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+
+    // funksion te baje handle checkboxat per color price dhe sizen
+    function handleSelection(checkbox) {
+        var allColorCheckbox = $('#color-all');
+        var colorCheckboxes = $("input[name='colors']");
+
+        var allPriceCheckbox = $('#price-all');
+        var priceCheckboxes = $("input[name='price']");
+
+        var allSizeCheckbox = $('#size-all');
+        var sizeCheckboxes = $("input[name='size']");
+
+        // Handle "All Color" checkbox .. nese selekton "All" per ngjyre, cmim ose madhsi c'aktivizohen te gjitha opsionet e tjera
+        // ne te kunderten caktivizohet all
+
+        if (checkbox.attr('id') === 'color-all' && checkbox.is(':checked')) {
+            colorCheckboxes.not(allColorCheckbox).prop('checked', false); // uncheck krejt
+        } else if (checkbox.attr('name') === 'colors' && checkbox.attr('id') !== 'color-all' && checkbox.is(':checked')) {
+            allColorCheckbox.prop('checked', false);
+        }
+        if ($("input[name='colors']:checked").length === 0) {
+            allColorCheckbox.prop('checked', true);
+        }
+
+        if (checkbox.attr('id') === 'price-all' && checkbox.is(':checked')) {
+            priceCheckboxes.not(allPriceCheckbox).prop('checked', false); 
+        } else if (checkbox.attr('name') === 'price' && checkbox.attr('id') !== 'price-all' && checkbox.is(':checked')) {
+            allPriceCheckbox.prop('checked', false);
+        }
+        if ($("input[name='price']:checked").length === 0) {
+            allPriceCheckbox.prop('checked', true);
+        }
+
+        if (checkbox.attr('id') === 'size-all' && checkbox.is(':checked')) {
+            sizeCheckboxes.not(allSizeCheckbox).prop('checked', false); 
+        } else if (checkbox.attr('name') === 'size' && checkbox.attr('id') !== 'size-all' && checkbox.is(':checked')) {
+            allSizeCheckbox.prop('checked', false);
+        }
+        if ($("input[name='size']:checked").length === 0) {
+            allSizeCheckbox.prop('checked', true);
+        }
+    }
+
+    // funksion per aplikimin e filtrave dhe kryen AJAX req. per te updateuar produktet.
+    function applyFilters(sortOrder) {
+        // inicializon lista bosh per te mbledh filtrat e selektuar.
+        var selectedPrices = [];
+        var selectedColors = [];
+        var selectedSizes = [];
+
+        $("input[name='price']:checked").each(function () {
+            selectedPrices.push($(this).val());
+        });
+
+        $("input[name='colors']:checked").each(function () {
+            selectedColors.push($(this).val());
+        });
+
+        $("input[name='size']:checked").each(function () {
+            selectedSizes.push($(this).val());
+        });
+        // mbledh vleret e selektuara
+
+        // mer vleren minimale dhe maksimale bazuar ne intervalin e zgjedhur ne shop.cshtml 
+        var minPrice = selectedPrices.length > 0 ? selectedPrices[0].split('-')[0] : null;
+        var maxPrice = selectedPrices.length > 0 ? selectedPrices[selectedPrices.length - 1].split('-')[1] : null;
+
+        // merr kategorin subkategorin e produktit 
+        var categoryId = '@ViewBag.CategoryId';
+        var subCategoryId = '@ViewBag.SubCategoryId';
+        var searchQuery = $('#searchQuery').val(); // search query
+
+        // AJAX request per aplikimin e filterave
+        $.ajax({
+            url: '@Url.Action("Shop")',
+            type: 'GET',
+            data: {
+                minPrice: minPrice,
+                maxPrice: maxPrice,
+                colors: selectedColors.join(','), 
+                sizes: selectedSizes.join(','),   
+                categoryId: categoryId,           // kategorin dhe subkategorin e produktit
+                subCategoryId: subCategoryId,
+                sortOrder: sortOrder,             // renditjen (latest,sale)
+                searchQuery: searchQuery          // kerkesa e search query
+            },
+            success: function (result) {
+                $('#product-container').html($(result).find('#product-container').html()); // rifreskon seksionin e produktev
+            },
+        });
+        // dergon të gjitha filtrat dhe parametrat ne server merr rezultatet dhe rifreskon vetëm seksionin e produkteve në faqe (prodcut container).
+    }
+});
+
+        // kur partial view hapet, ngarkon detajet e produktit me AJAX
+        $(document).ready(function () {
+            $('#productDetailModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // butoni qe e hapi partial viewin
+                var productId = button.data('product-id'); // merr ID e produktit
+
+                // kerkese AJAX per te marre detajet e produktit ne controllerin product action=getproductdetails
+                $.ajax({
+                    url: '/Products/GetProductDetails',
+                    type: 'GET',
+                    data: { id: productId },
+                    success: function (data) {
+                        $('#productDetailBody').html(data); // vendos te dhenat ne partial view
+
+                        // inicializon eventet per dynamic changes
+                        initializeProductScripts(productId);
+                    },
+                    error: function () {
+                        $('#productDetailBody').html('<p class="text-danger">Failed to load product details. Please try again.</p>');
+                    }
+                });
+            });
+        });
+
+        function initializeProductScripts(productId) {
+
+            const priceDisplayElement = document.getElementById('priceDisplay-' + productId); // merr elementin nga id ku shfaqet cmimi
+
+            const colorRadios = document.querySelectorAll('input[name="color-' + productId + '"]'); // gjen opsionet e ngjyrave dhe madhesive per produktin
+            const sizeRadios = document.querySelectorAll('input[name="size-' + productId + '"]');
+            const quantityInput = document.getElementById('quantity-' + productId);// merr inputin per quantityn dhe butonin
+            const addToCartButton = document.getElementById('addToCart-' + productId);
+            const basePrice = parseFloat($('#basePrice-' + productId).data('price')); // cmimin baze ose at me lirim
+            const baseSalePrice = parseFloat($('#baseSalePrice-' + productId).data('saleprice')) || null;
+
+
+            // ne menyre dynamike shfaq cmimin me zbritje ose pa zbritje 
+            function updatePriceDisplay(price, salePrice) {
+                // validon cmimet per tu shmangur nan ose null's
+                const isPriceValid = price !== null && !isNaN(price);
+                const isSalePriceValid = salePrice !== null && !isNaN(salePrice);
+
+                if (!isPriceValid && !isSalePriceValid) {
+                    priceDisplayElement.innerHTML = `$${basePrice.toFixed(2)}`;
+                    return;
+                }
+
+                // nese sgziston cmim sale ather vendos nje vi ne mes te cmimit baze
+                if (isSalePriceValid) {
+                    const validPrice = isPriceValid ? price : basePrice;
+                    priceDisplayElement.innerHTML = `<span class="text-muted"><del>$${validPrice.toFixed(2)}</del></span> $${salePrice.toFixed(2)}`;
+                    return;
+                }
+
+                // shfaq cmimin nese nuk ka saleprice
+                if (isPriceValid) {
+                    priceDisplayElement.innerHTML = `$${price.toFixed(2)}`;
+                } else {
+                    priceDisplayElement.innerHTML = `$${basePrice.toFixed(2)}`;
+                }
+            }
+
+
+            // filtron ngjyrat dhe madhsit bazuar ne perzgjedhjen aktuale, duke caktivizuar opsionet qe nuk kane stok.
+            function findMatchingStock(size, color) {
+                const stockElement = document.querySelector(`#stock-${productId}-${size}-${color}`);
+                if (stockElement) {
+                    const stockPrice = parseFloat(stockElement.getAttribute('data-price'));
+                    const stockSalePrice = stockElement.getAttribute('data-saleprice') !== "null" ? parseFloat(stockElement.getAttribute('data-saleprice')) : null;
+                    return { price: stockPrice, salePrice: stockSalePrice };
+                }
+                return null;
+            }
+
+            function filterColors(selectedSize) {
+                colorRadios.forEach(colorRadio => {
+                    const color = colorRadio.value;
+                    const matchingStock = findMatchingStock(selectedSize, color);
+                    colorRadio.disabled = !matchingStock;
+                    if (!matchingStock && colorRadio.checked) {
+                        colorRadio.checked = false;
+                    }
+                });
+            }
+
+            function filterSizes(selectedColor) {
+                sizeRadios.forEach(sizeRadio => {
+                    const size = sizeRadio.value;
+                    const matchingStock = findMatchingStock(size, selectedColor);
+                    sizeRadio.disabled = !matchingStock;
+                    if (!matchingStock && sizeRadio.checked) {
+                        sizeRadio.checked = false;
+                    }
+                });
+            }
+
+            sizeRadios.forEach(sizeRadio => {
+                sizeRadio.addEventListener('change', function () {
+                    const selectedSize = document.querySelector('input[name="size-' + productId + '"]:checked')?.value;
+                    filterColors(selectedSize);
+                    updatePriceOnSelection();
+                });
+            });
+
+            colorRadios.forEach(colorRadio => {
+                colorRadio.addEventListener('change', function () {
+                    const selectedColor = document.querySelector('input[name="color-' + productId + '"]:checked')?.value;
+                    filterSizes(selectedColor);
+                    updatePriceOnSelection();
+                });
+            });
+
+
+
+            function autoSelectSingleOption(options) {
+                if (options.length === 1) {
+                    options[0].checked = true;
+                }
+            }
+
+            // updateon cmimin kur madhsia dhe ngjyra jane te zgjedhura
+            function updatePriceOnSelection() {
+                const selectedSize = document.querySelector('input[name="size-' + productId + '"]:checked')?.value;
+                const selectedColor = document.querySelector('input[name="color-' + productId + '"]:checked')?.value;
+
+                if (selectedSize && selectedColor) {
+                    const matchingStock = findMatchingStock(selectedSize, selectedColor);
+                    if (matchingStock) {
+                        updatePriceDisplay(matchingStock.price, matchingStock.salePrice);
+                    } else {
+                        updatePriceDisplay(basePrice, baseSalePrice);
+                    }
+                } else {
+                    updatePriceDisplay(basePrice, baseSalePrice);
+                }
+            }
+
+            // update kur ndryshohet madhsia ose ngjyra
+            sizeRadios.forEach(sizeRadio => {
+                sizeRadio.addEventListener('change', updatePriceOnSelection);
+            });
+
+            colorRadios.forEach(colorRadio => {
+                colorRadio.addEventListener('change', updatePriceOnSelection);
+            });
+
+
+
+
+
+
+
+            // funksionaliteti i butonit per te shtuar produktin ne shport, ben AJAX req. dhe kontrollon per sukses apo error (alerte).
+            addToCartButton.addEventListener('click', function () {
+                const selectedSize = document.querySelector('input[name="size-' + productId + '"]:checked')?.value;
+                const selectedColor = document.querySelector('input[name="color-' + productId + '"]:checked')?.value;
+                const quantity = parseInt(quantityInput.value) || 1;
+
+
+                $.ajax({
+                    url: '/CartItems/AddToCart',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        size: selectedSize,
+                        variantDescription: selectedColor,
+                        quantity: quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while adding the product to the cart.");
+                    }
+                });
+            });
+
+            // thirrje
+            autoSelectSingleOption(sizeRadios);
+            autoSelectSingleOption(colorRadios);
+
+
+            // thirrje 
+            updatePriceOnSelection();
+        }
+        </script>
+
+
+
+</body>
+
+</html>
